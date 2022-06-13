@@ -1,17 +1,19 @@
 import Button from "./Button";
 import styles from "./App.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [value, setValue] = useState(0);
   const onClick = () => setValue((prev) => prev + 1);
   /**
-   * 다음시간에 배울 내용 useEffect()
-   * 기본적으로 state가 변경될 경우 App 내의 모든 컴포넌트가 re-rendering 된다.
-   * 그러나 렌더링될 때마다 실행되지 않아야 할 코드가 있을 경우(초기화 및 API 호출 등)
-   * 한 번만 코드가 살행되도록 (또는 조건을 줄 수 있음) 하는 부분은 위한 코드 예제
+   * useEffect() 예제
+   * 두 번째 매개변수를 빈 배열로 제공할 경우 useEffect에 제공한 첫 번째 callback 함수가 처음 한 번만 실행된다.
    * */
-  console.log("rendered");
+  console.log("I run all the time.");
+  const iRunOnlyOnce = () => {
+    console.log("I run only once.");
+  };
+  useEffect(iRunOnlyOnce, []);
   return (
     <div>
       <h1 className={styles.title}>{value}</h1>
