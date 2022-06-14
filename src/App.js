@@ -1,42 +1,64 @@
 import { useState, useEffect } from "react";
-import Coins from "./Coins";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [coins, setCoins] = useState([]);
-  const [amount, setAmount] = useState(0);
-  const [selectedCoin, setSelectedCoin] = useState();
+  const [movies, setMovies] = useState([]);
+
+  /* 비동기방식 fetch */
+  const getMovies = async () => {
+    /*
+    const response = await(fetch(
+      `https://yts.mx/api/v2/list_movies.json?mininum_rating=8.5&sort_by=year`
+    )).json();
+    const json = await response.json();
+    */
+
+    /* fetch 결과를 response로 받고 json으로 변환하는 코드의 축약형 */
+    const json = await (
+      await fetch(
+        `https://yts.mx/api/v2/list_movies.json?mininum_rating=8.5&sort_by=year`
+      )
+    ).json();
+    setMovies(json.data.movies);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetch("https://api.coinpaprika.com/v1/tickers")
+    getMovies();
+    /* 동기방식 fetch
+    fetch(
+      `https://yts.mx/api/v2/list_movies.json?mininum_rating=8.5&sort_by=year`
+    )
       .then((response) => response.json())
       .then((json) => {
-        setCoins(json);
-        setSelectedCoin(json[0]);
+        setMovies(json);
         setLoading(false);
       });
+    */
   }, []);
-
-  const onChangeAmount = (event) => setAmount(parseInt(event.target.value));
-  const onChangeCoin = (event) => {
-    const coinId = event.target.value;
-    const coin = coins.find((coin) => coin.id === coinId);
-    setSelectedCoin(coin);
-  };
 
   return (
     <div>
-      <h1>The Coins! ({coins.length})</h1>
+      <h1>The Movies! ({movies.length})</h1>
       {loading ? (
         "Loading..."
       ) : (
-        <Coins
-          coins={coins}
-          amount={amount}
-          onChangeAmount={onChangeAmount}
-          selectedCoin={selectedCoin}
-          onChangeCoin={onChangeCoin}
-        />
+        <section>
+          {movies.map((movie) => (
+            <article key={movie.id}>
+              <h2>{movie.title}</h2>
+              <div>
+                <img src={movie.medium_cover_image} alt={movie.title} />
+              </div>
+              <p>{movie.summary}</p>
+              <ul>
+                {movie.genres.map((genre, idx) => (
+                  <li key={idx}>{genre}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </section>
       )}
     </div>
   );
